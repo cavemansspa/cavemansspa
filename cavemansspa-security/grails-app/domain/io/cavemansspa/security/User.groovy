@@ -13,18 +13,29 @@ class User implements Serializable {
 
     String username
     String password
-    boolean enabled = true
+    boolean enabled = false // disabled by default, click registration link to enable.
     boolean accountExpired
     boolean accountLocked
     boolean passwordExpired
+
+    String email
+
+    Date dateCreated
+    Date lastUpdated
+
+    Date lastAuthenticated
 
     Set<Role> getAuthorities() {
         (UserRole.findAllByUser(this) as List<UserRole>)*.role as Set<Role>
     }
 
+    static hasMany = [userOauthProviders: UserOauthProviderXref]
+
     static constraints = {
         password nullable: false, blank: false, password: true
         username nullable: false, blank: false, unique: true
+        email email: true
+        lastAuthenticated nullable: true
     }
 
     static mapping = {
