@@ -1,6 +1,11 @@
 package cavemansspa.security
 
 import grails.plugins.*
+import io.cavemansspa.security.CavemansSpaOauthUserDetailsService
+import io.cavemansspa.security.CavemansSpaRestOauthService
+import io.cavemansspa.security.CavemansSpaSecurityEventListener
+import io.cavemansspa.security.CavemansSpaUserDetailsService
+import io.cavemansspa.security.UserPasswordEncoderListener
 
 class CavemansspaSecurityGrailsPlugin extends Plugin {
 
@@ -8,7 +13,7 @@ class CavemansspaSecurityGrailsPlugin extends Plugin {
     def grailsVersion = "3.3.8 > *"
     // resources that are excluded from plugin packaging
     def pluginExcludes = [
-        "grails-app/views/error.gsp"
+            "grails-app/views/error.gsp"
     ]
 
     // TODO Fill in these fields
@@ -39,8 +44,27 @@ Brief summary/description of the plugin.
     // Online location of the plugin's browseable source code.
 //    def scm = [ url: "http://svn.codehaus.org/grails-plugins/" ]
 
-    Closure doWithSpring() { {->
-            // TODO Implement runtime spring config (optional)
+    Closure doWithSpring() {
+        { ->
+            userPasswordEncoderListener(UserPasswordEncoderListener)
+            userDetailsService(CavemansSpaUserDetailsService)
+            cavemansSpaUserDetailsService(CavemansSpaUserDetailsService)
+            oauthUserDetailsService(CavemansSpaOauthUserDetailsService) { bean ->
+                bean.autowire = "byName"
+            }
+            
+            cavemansSpaOauthUserDetailsService(CavemansSpaOauthUserDetailsService) { bean ->
+                bean.autowire = "byName"
+            }
+
+            cavemansSpaSecurityEventListener(CavemansSpaSecurityEventListener) { bean ->
+                bean.autowire = "byName"
+            }
+
+            cavemansSpaRestOauthService(CavemansSpaRestOauthService) { bean ->
+                bean.autowire = "byName"
+            }
+
         }
     }
 
